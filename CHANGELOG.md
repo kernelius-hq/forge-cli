@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-02-01
+
+### Added
+- **Organization Type Support**: Add `--type` option to `forge orgs create` command
+  - Store organization type in metadata (e.g., `company`, `team`, `open-source`, `personal`)
+  - Display org type in `forge orgs list` and `forge orgs view` commands
+  - Flexible string value - use any type that fits your use case
+
+### Changed
+- Update organization endpoints to use new API routes (`/api/orgs`, `/api/user/orgs`)
+- Improved org list command to show metadata (type, description)
+
+### Examples
+```bash
+forge orgs create --name "Acme Corp" --slug "acme" --type "company"
+forge orgs create --name "React Hooks" --slug "react-hooks" --type "open-source"
+forge orgs create --name "Dev Team" --slug "dev-team" --type "team"
+```
+
 ## [0.2.0] - 2026-02-01
 
 ### Added

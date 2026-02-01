@@ -259,23 +259,23 @@ export function createReposCommand(): Command {
     .action(async () => {
       try {
         const user = await apiGet<any>("/api/users/me");
-        const result = await apiGet<{ stars: any[] }>(
-          `/api/users/${user.id}/starred`
+        const result = await apiGet<{ repos: any[] }>(
+          `/api/users/${user.username}/starred`
         );
 
-        const stars = result.stars || [];
+        const repos = result.repos || [];
 
-        if (stars.length === 0) {
+        if (repos.length === 0) {
           console.log(chalk.yellow("No starred repositories"));
           return;
         }
 
-        console.log(chalk.bold(`Starred Repositories (${stars.length})`));
+        console.log(chalk.bold(`Starred Repositories (${repos.length})`));
         console.log();
 
-        for (const star of stars) {
-          const repo = star.repository;
-          const identifier = `@${repo.ownerIdentifier}/${repo.name}`;
+        for (const repo of repos) {
+          const ownerName = repo.owner?.identifier || repo.owner?.username || "unknown";
+          const identifier = `@${ownerName}/${repo.name}`;
           const visibility = repo.visibility === "private" ? "🔒" : "🌐";
 
           console.log(`${visibility} ${chalk.cyan(identifier)}`);

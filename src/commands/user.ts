@@ -85,7 +85,7 @@ export function createUserCommand(): Command {
           return;
         }
 
-        await apiPatch<any>("/api/users/me", updates);
+        await apiPatch<any>("/api/settings/profile", updates);
 
         console.log(chalk.green("✓ Profile updated successfully"));
       } catch (error: any) {

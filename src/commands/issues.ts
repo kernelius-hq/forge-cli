@@ -14,9 +14,11 @@ export function createIssuesCommand(): Command {
       try {
         const [ownerIdentifier, name] = parseRepoArg(options.repo);
 
-        const issuesList = await apiGet<any[]>(
+        const result = await apiGet<{ issues: any[]; hasMore: boolean }>(
           `/api/repositories/${ownerIdentifier}/${name}/issues?state=${options.state}`
         );
+
+        const issuesList = result.issues || [];
 
         if (issuesList.length === 0) {
           console.log(chalk.yellow(`No ${options.state} issues found`));
@@ -34,7 +36,7 @@ export function createIssuesCommand(): Command {
             `${stateIcon} #${issue.number} ${chalk.cyan(issue.title)}`
           );
           console.log(
-            chalk.dim(`   by @${issue.author.username} · ${new Date(issue.createdAt).toLocaleDateString()}`)
+            chalk.dim(`   by @${issue.author?.username || "unknown"} · ${new Date(issue.createdAt).toLocaleDateString()}`)
           );
         }
       } catch (error: any) {

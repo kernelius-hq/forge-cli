@@ -16,9 +16,11 @@ export function createPrsCommand(): Command {
       try {
         const [ownerIdentifier, name] = parseRepoArg(options.repo);
 
-        const prsList = await apiGet<any[]>(
-          `/api/repositories/${ownerIdentifier}/${name}/pull-requests?state=${options.state}`
+        const result = await apiGet<{ pullRequests: any[]; hasMore: boolean }>(
+          `/api/repositories/${ownerIdentifier}/${name}/pulls?state=${options.state}`
         );
+
+        const prsList = result.pullRequests || [];
 
         if (prsList.length === 0) {
           console.log(chalk.yellow(`No ${options.state} pull requests found`));
@@ -34,11 +36,11 @@ export function createPrsCommand(): Command {
 
         for (const pr of prsList) {
           const stateIcon =
-            pr.state === "open" ? "🟢" : pr.state === "merged" ? "🟣" : "⚪";
+            pr.merged ? "🟣" : pr.state === "open" ? "🟢" : "⚪";
           console.log(`${stateIcon} #${pr.number} ${chalk.cyan(pr.title)}`);
           console.log(
             chalk.dim(
-              `   ${pr.headBranch} → ${pr.baseBranch} by @${pr.author.username} · ${new Date(pr.createdAt).toLocaleDateString()}`
+              `   ${pr.headBranch} → ${pr.baseBranch} by @${pr.author?.username || "unknown"} · ${new Date(pr.createdAt).toLocaleDateString()}`
             )
           );
         }
@@ -58,15 +60,15 @@ export function createPrsCommand(): Command {
         const [ownerIdentifier, name] = parseRepoArg(options.repo);
 
         const pr = await apiGet<any>(
-          `/api/repositories/${ownerIdentifier}/${name}/pull-requests/${options.number}`
+          `/api/repositories/${ownerIdentifier}/${name}/pulls/${options.number}`
         );
 
         const stateIcon =
-          pr.state === "open" ? "🟢" : pr.state === "merged" ? "🟣" : "⚪";
+          pr.merged ? "🟣" : pr.state === "open" ? "🟢" : "⚪";
         console.log(`${stateIcon} ${chalk.bold(`#${pr.number} ${pr.title}`)}`);
         console.log(
           chalk.dim(
-            `${pr.headBranch} → ${pr.baseBranch} by @${pr.author.username} · ${new Date(pr.createdAt).toLocaleDateString()}`
+            `${pr.headBranch} → ${pr.baseBranch} by @${pr.author?.username || "unknown"} · ${new Date(pr.createdAt).toLocaleDateString()}`
           )
         );
         console.log();
@@ -74,13 +76,13 @@ export function createPrsCommand(): Command {
           console.log(pr.body);
           console.log();
         }
-        console.log(chalk.dim(`State: ${pr.state}`));
+        console.log(chalk.dim(`State: ${pr.merged ? "merged" : pr.state}`));
         if (pr.mergedAt) {
           console.log(
             chalk.dim(`Merged: ${new Date(pr.mergedAt).toLocaleDateString()}`)
           );
         }
-        if (pr.closedAt) {
+        if (pr.closedAt && !pr.merged) {
           console.log(
             chalk.dim(`Closed: ${new Date(pr.closedAt).toLocaleDateString()}`)
           );
@@ -104,7 +106,7 @@ export function createPrsCommand(): Command {
         const [ownerIdentifier, name] = parseRepoArg(options.repo);
 
         const pr = await apiPost<any>(
-          `/api/repositories/${ownerIdentifier}/${name}/pull-requests`,
+          `/api/repositories/${ownerIdentifier}/${name}/pulls`,
           {
             headBranch: options.head,
             baseBranch: options.base,
@@ -129,17 +131,19 @@ export function createPrsCommand(): Command {
     .description("Merge a pull request")
     .requiredOption("--repo <repo>", "Repository (@owner/name)")
     .requiredOption("--number <number>", "PR number")
-    .option("--method <method>", "Merge method (merge/squash/rebase)", "merge")
+    .option("--message <message>", "Custom merge commit message")
     .action(async (options) => {
       try {
         const [ownerIdentifier, name] = parseRepoArg(options.repo);
 
-        await apiPost<any>(
-          `/api/repositories/${ownerIdentifier}/${name}/pull-requests/${options.number}/merge`,
-          {
-            mergeMethod: options.method,
-          }
+        // First get the PR to obtain its ID
+        const pr = await apiGet<any>(
+          `/api/repositories/${ownerIdentifier}/${name}/pulls/${options.number}`
         );
+
+        await apiPost<any>(`/api/pulls/${pr.id}/merge`, {
+          commitMessage: options.message,
+        });
 
         console.log(chalk.green("✓ Pull request merged successfully"));
       } catch (error: any) {
@@ -157,12 +161,14 @@ export function createPrsCommand(): Command {
       try {
         const [ownerIdentifier, name] = parseRepoArg(options.repo);
 
-        await apiPatch<any>(
-          `/api/repositories/${ownerIdentifier}/${name}/pull-requests/${options.number}`,
-          {
-            state: "closed",
-          }
+        // First get the PR to obtain its ID
+        const pr = await apiGet<any>(
+          `/api/repositories/${ownerIdentifier}/${name}/pulls/${options.number}`
         );
+
+        await apiPatch<any>(`/api/pulls/${pr.id}`, {
+          state: "closed",
+        });
 
         console.log(chalk.green("✓ Pull request closed successfully"));
       } catch (error: any) {
@@ -181,12 +187,14 @@ export function createPrsCommand(): Command {
       try {
         const [ownerIdentifier, name] = parseRepoArg(options.repo);
 
-        await apiPost<any>(
-          `/api/repositories/${ownerIdentifier}/${name}/pull-requests/${options.number}/comments`,
-          {
-            body: options.body,
-          }
+        // First get the PR to obtain its ID
+        const pr = await apiGet<any>(
+          `/api/repositories/${ownerIdentifier}/${name}/pulls/${options.number}`
         );
+
+        await apiPost<any>(`/api/pulls/${pr.id}/comments`, {
+          body: options.body,
+        });
 
         console.log(chalk.green("✓ Comment added successfully"));
       } catch (error: any) {

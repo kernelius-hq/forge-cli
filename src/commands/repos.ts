@@ -14,7 +14,13 @@ export function createReposCommand(): Command {
     .description("List accessible repositories")
     .action(async () => {
       try {
-        const repositories = await apiGet<any[]>("/api/repositories");
+        // Get current user to list their repositories
+        const user = await apiGet<any>("/api/users/me");
+        const result = await apiGet<{ repos: any[] }>(
+          `/api/repositories/user/${user.username}`
+        );
+
+        const repositories = result.repos || [];
 
         if (repositories.length === 0) {
           console.log(chalk.yellow("No repositories found"));
@@ -25,7 +31,8 @@ export function createReposCommand(): Command {
         console.log();
 
         for (const repo of repositories) {
-          const identifier = `@${repo.ownerIdentifier}/${repo.name}`;
+          const ownerName = repo.owner?.identifier || repo.owner?.username || user.username;
+          const identifier = `@${ownerName}/${repo.name}`;
           const visibility = repo.visibility === "private" ? "🔒" : "🌐";
 
           console.log(`${visibility} ${chalk.cyan(identifier)}`);

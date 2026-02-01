@@ -3,6 +3,7 @@ import chalk from "chalk";
 import { apiGet, apiPost, apiDelete } from "../api.js";
 import { spawn } from "node:child_process";
 import { getConfig } from "../config.js";
+import { getTemplateById } from "./templates.js";
 
 export function createReposCommand(): Command {
   const repos = new Command("repos").description(
@@ -130,9 +131,22 @@ export function createReposCommand(): Command {
     .option("--description <desc>", "Repository description")
     .option("--visibility <type>", "Visibility (public/private)", "private")
     .option("--org <identifier>", "Organization identifier (defaults to your personal org)")
+    .option("--template <id>", "Repository template ID (e.g., patient-record, research-dataset, code-repository)")
     .action(async (options) => {
       try {
-        const { name, description, visibility, org } = options;
+        const { name, description, visibility, org, template } = options;
+
+        // Validate template ID if provided
+        if (template) {
+          const templateObj = getTemplateById(template);
+          if (!templateObj) {
+            console.error(chalk.red(`Error: Template "${template}" not found`));
+            console.log(chalk.dim("\nAvailable templates:"));
+            console.log(chalk.dim("  Use 'forge templates list' to see all available templates"));
+            console.log(chalk.dim("  Use 'forge templates view <id>' to see template details"));
+            process.exit(1);
+          }
+        }
 
         // Get current user to determine default org
         const user = await apiGet<any>("/api/users/me");
@@ -143,10 +157,15 @@ export function createReposCommand(): Command {
           description,
           visibility,
           orgIdentifier,
+          templateId: template,
         });
 
         console.log(chalk.green("✓ Repository created successfully"));
         console.log(chalk.dim(`  @${repo.ownerIdentifier}/${repo.name}`));
+        if (template) {
+          const templateObj = getTemplateById(template);
+          console.log(chalk.dim(`  Template: ${templateObj?.name || template}`));
+        }
       } catch (error: any) {
         console.error(chalk.red(`Error: ${error.message}`));
         process.exit(1);

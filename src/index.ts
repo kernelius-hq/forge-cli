@@ -8,6 +8,7 @@ import { createIssuesCommand } from "./commands/issues.js";
 import { createPrsCommand } from "./commands/prs.js";
 import { createOrgsCommand } from "./commands/orgs.js";
 import { createUserCommand } from "./commands/user.js";
+import { createTemplatesCommand } from "./commands/templates.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,5 +29,6 @@ program.addCommand(createIssuesCommand());
 program.addCommand(createPrsCommand());
 program.addCommand(createOrgsCommand());
 program.addCommand(createUserCommand());
+program.addCommand(createTemplatesCommand());
 
 program.parse();

@@ -45,6 +45,19 @@ forge auth config
 forge auth logout
 ```
 
+### Templates
+
+```bash
+# List all available templates
+forge templates list
+
+# List templates for a specific organization type
+forge templates list --org-type healthcare
+
+# View detailed information about a template
+forge templates view patient-record
+```
+
 ### Repositories
 
 ```bash
@@ -59,7 +72,43 @@ forge repos clone @owner/repo [destination]
 
 # Create a new repository
 forge repos create --name my-repo --visibility private
+
+# Create a repository from a template
+forge repos create --name my-patient-repo --template patient-record --visibility private
 ```
+
+#### Repository Templates
+
+When creating repositories, you can use type-specific templates that pre-configure metadata and initialize with relevant files.
+
+**Discover templates:**
+```bash
+# See all available templates
+forge templates list
+
+# Filter by organization type
+forge templates list --org-type healthcare
+
+# View template details
+forge templates view patient-record
+```
+
+**Create with template:**
+```bash
+forge repos create --name patient-john-doe \
+  --template patient-record \
+  --description "Medical records for patient John Doe" \
+  --visibility private
+```
+
+**Available template categories:**
+- **Healthcare** - `patient-record`, `fhir-resource`, `medical-protocol`, `clinical-study`
+- **Research** - `research-dataset`, `research-experiment`, `research-publication`, `research-analysis`
+- **Company** - `code-repository`
+- **Education** - `course-materials`
+- **Nonprofit** - `campaign`
+
+Use `forge templates list` to see all templates with descriptions.
 
 ### Issues
 

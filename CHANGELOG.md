@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-02-01
+
+### Added
+- **Templates Command**: New `forge templates` command for repository template discovery
+  - `forge templates list` - Show all available templates grouped by organization type
+  - `forge templates list --org-type <type>` - Filter templates by category (healthcare, research, company, education, nonprofit)
+  - `forge templates view <id>` - View detailed template information including metadata, naming patterns, and usage examples
+- **Template Validation**: Added client-side validation to `forge repos create --template`
+  - Validates template ID exists before making API call
+  - Shows helpful error messages with guidance when invalid template specified
+  - Displays template name after successful repository creation
+
+### Changed
+- Enhanced `forge repos create` command with `--template` option for type-specific repositories
+- Updated documentation with template discovery workflow and comprehensive examples
+
+### Examples
+```bash
+# Discover available templates
+forge templates list
+forge templates list --org-type healthcare
+forge templates view patient-record
+
+# Create repository with template
+forge repos create --name patient-john-doe \
+  --template patient-record \
+  --description "Medical records for patient" \
+  --visibility private
+```
+
 ## [0.2.1] - 2026-02-01
 
 ### Added

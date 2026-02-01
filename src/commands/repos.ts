@@ -59,7 +59,7 @@ export function createReposCommand(): Command {
           `/api/repositories/${ownerIdentifier}/${name}`
         );
 
-        console.log(chalk.bold(`${repo.ownerIdentifier}/${repo.name}`));
+        console.log(chalk.bold(`${repo.owner?.identifier || repo.ownerIdentifier}/${repo.name}`));
         if (repo.description) {
           console.log(chalk.dim(repo.description));
         }

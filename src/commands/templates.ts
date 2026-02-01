@@ -217,10 +217,11 @@ const REPO_TEMPLATES: Record<OrgType, RepoTemplate[]> = {
 };
 
 /**
- * Get all available templates
+ * Get all available templates (deduplicated - excludes generic which is same as company)
  */
 function getAllTemplates(): RepoTemplate[] {
-  return Object.values(REPO_TEMPLATES).flat();
+  const { generic, ...orgTypes } = REPO_TEMPLATES;
+  return Object.values(orgTypes).flat();
 }
 
 /**

@@ -187,14 +187,10 @@ export function createPrsCommand(): Command {
       try {
         const [ownerIdentifier, name] = parseRepoArg(options.repo);
 
-        // First get the PR to obtain its ID
-        const pr = await apiGet<any>(
-          `/api/repositories/${ownerIdentifier}/${name}/pulls/${options.number}`
+        await apiPost<any>(
+          `/api/repositories/${ownerIdentifier}/${name}/pulls/${options.number}/comments`,
+          { body: options.body }
         );
-
-        await apiPost<any>(`/api/pulls/${pr.id}/comments`, {
-          body: options.body,
-        });
 
         console.log(chalk.green("✓ Comment added successfully"));
       } catch (error: any) {

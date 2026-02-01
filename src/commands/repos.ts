@@ -148,17 +148,27 @@ export function createReposCommand(): Command {
           }
         }
 
-        // Get current user to determine default org
-        const user = await apiGet<any>("/api/users/me");
-        const orgIdentifier = org || user.username;
-
-        const repo = await apiPost<any>("/api/repositories", {
-          name,
-          description,
-          visibility,
-          orgIdentifier,
-          templateId: template,
-        });
+        // Determine endpoint based on whether org is specified
+        let repo;
+        if (org) {
+          // Create repository in organization
+          repo = await apiPost<any>(`/api/orgs/${org}/repos`, {
+            name,
+            description,
+            visibility,
+            templateId: template,
+          });
+        } else {
+          // Create repository under user
+          const user = await apiGet<any>("/api/users/me");
+          repo = await apiPost<any>("/api/repositories", {
+            name,
+            description,
+            visibility,
+            orgIdentifier: user.username,
+            templateId: template,
+          });
+        }
 
         console.log(chalk.green("✓ Repository created successfully"));
         console.log(chalk.dim(`  @${repo.ownerIdentifier}/${repo.name}`));

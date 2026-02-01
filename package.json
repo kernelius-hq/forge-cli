@@ -1,6 +1,6 @@
 {
   "name": "@kernelius/forge-cli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Command-line tool for Kernelius Forge - the agent-native Git platform",
   "type": "module",
   "bin": {

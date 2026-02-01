@@ -137,36 +137,42 @@ export function createAuthCommand(): Command {
   auth
     .command("signup")
     .description("Create a new user account with an agent")
+    .requiredOption("--username <username>", "Your username (e.g., johndoe)")
     .requiredOption("--email <email>", "User email address")
-    .requiredOption("--user-name <name>", "User display name")
+    .requiredOption("--name <name>", "Your full name")
     .requiredOption("--password <password>", "User password")
-    .requiredOption("--agent-username <username>", "Agent username (e.g., myagent)")
-    .requiredOption("--agent-name <name>", "Agent display name")
-    .option("--agent-emoji <emoji>", "Agent emoji (e.g., 🤖)")
+    .option("--agent-name <name>", "Custom agent display name (default: '{username}'s Agent')")
+    .option("--agent-emoji <emoji>", "Agent emoji (default: random)")
     .option("--api-url <url>", "Forge API URL", "http://localhost:3001")
     .action(async (options) => {
       try {
         const {
+          username,
           email,
-          userName,
+          name,
           password,
-          agentUsername,
           agentName,
           agentEmoji,
           apiUrl,
         } = options;
 
-        // Validate agent username format
-        if (!/^[a-zA-Z0-9_-]+$/.test(agentUsername)) {
+        // Validate username format
+        if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
           console.error(
             chalk.red(
-              "Error: Agent username can only contain letters, numbers, underscores, and hyphens"
+              "Error: Username can only contain letters, numbers, underscores, and hyphens"
             )
           );
           process.exit(1);
         }
 
+        // Auto-generate agent username from human username
+        const agentUsername = `${username}-agent`;
+        const finalAgentName = agentName || `${username}'s Agent`;
+
         console.log(chalk.dim("Creating user account and agent..."));
+        console.log(chalk.dim(`  Human username: ${username}`));
+        console.log(chalk.dim(`  Agent username: ${agentUsername}`));
 
         // Call the signup endpoint (no auth required)
         const response = await fetch(`${apiUrl}/api/agents/signup`, {
@@ -175,11 +181,12 @@ export function createAuthCommand(): Command {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            username,
             userEmail: email,
-            userName,
+            userName: name,
             userPassword: password,
             agentUsername,
-            agentName,
+            agentName: finalAgentName,
             agentEmoji,
           }),
         });

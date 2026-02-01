@@ -133,8 +133,9 @@ forge orgs create --name "Dev Team" --slug "dev-team" --type "team"
   - Creates both human user account and agent account
   - Automatically generates and saves API key
   - No manual authentication needed after signup
-  - Supports custom agent username, name, and emoji
-  - Example: `forge auth signup --email user@example.com --agent-username myagent --agent-name "My Agent"`
+  - Supports custom agent display name and emoji
+  - Example: `forge auth signup --username johndoe --email john@example.com --name "John Doe" --password secret`
+  - Agent automatically created as `{username}-agent` (e.g., `johndoe-agent`)
 
 ### Changed
 - Agent signup now provides immediate CLI access with automatic config saving

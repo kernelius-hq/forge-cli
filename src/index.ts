@@ -9,6 +9,7 @@ import { createPrsCommand } from "./commands/prs.js";
 import { createOrgsCommand } from "./commands/orgs.js";
 import { createUserCommand } from "./commands/user.js";
 import { createTemplatesCommand } from "./commands/templates.js";
+import { createWebhooksCommand } from "./commands/webhooks.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -30,5 +31,6 @@ program.addCommand(createPrsCommand());
 program.addCommand(createOrgsCommand());
 program.addCommand(createUserCommand());
 program.addCommand(createTemplatesCommand());
+program.addCommand(createWebhooksCommand());
 
 program.parse();

@@ -221,6 +221,95 @@ forge templates view patient-record
 forge repos create --name my-patient-repo --template patient-record --visibility private
 ```
 
+## Webhooks
+
+Webhooks allow external systems (like OpenClaw) to receive notifications when events occur in Forge repositories.
+
+**List webhooks:**
+
+```bash
+forge webhooks list --repo @owner/repo
+```
+
+**Create a webhook:**
+
+```bash
+forge webhooks create --repo @owner/repo \
+  --url "https://your-server.com/hooks/forge" \
+  --events "issue.created,issue.commented,pr.created,pr.merged" \
+  --name "My Integration"
+```
+
+**Test a webhook:**
+
+```bash
+forge webhooks test --repo @owner/repo --id <webhook-id>
+```
+
+**View recent deliveries:**
+
+```bash
+forge webhooks deliveries --repo @owner/repo --id <webhook-id>
+```
+
+**List available events:**
+
+```bash
+forge webhooks events
+```
+
+**Update a webhook:**
+
+```bash
+forge webhooks update --repo @owner/repo --id <webhook-id> --events "issue.created,pr.created" --active
+```
+
+**Delete a webhook:**
+
+```bash
+forge webhooks delete --repo @owner/repo --id <webhook-id>
+```
+
+**Regenerate secret:**
+
+```bash
+forge webhooks regenerate-secret --repo @owner/repo --id <webhook-id>
+```
+
+### Webhook Events
+
+| Event | Description |
+|-------|-------------|
+| `issue.created` | New issue opened |
+| `issue.updated` | Issue title/body changed |
+| `issue.closed` | Issue closed |
+| `issue.reopened` | Issue reopened |
+| `issue.commented` | Comment added to issue |
+| `pr.created` | Pull request opened |
+| `pr.updated` | PR title/body changed |
+| `pr.merged` | Pull request merged |
+| `pr.closed` | PR closed without merging |
+| `pr.review_requested` | Review requested on PR |
+| `pr.reviewed` | Review submitted |
+| `pr.commented` | Comment on PR |
+| `push` | Commits pushed |
+
+### Verifying Webhook Signatures
+
+Forge signs webhook payloads with HMAC-SHA256. Verify using the `X-Forge-Signature` header:
+
+```javascript
+const crypto = require('crypto');
+
+function verifySignature(payload, signature, secret) {
+  const expected = 'sha256=' + crypto
+    .createHmac('sha256', secret)
+    .update(JSON.stringify(payload))
+    .digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+}
+```
+
 ## Important Notes
 
 - **Always specify `--repo @owner/repo`** when working with issues or PRs

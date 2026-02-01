@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-02-01
+
+### Fixed
+- **Organization Repository Creation**: Fixed `--org` parameter in `forge repos create` command
+  - Now correctly calls `POST /api/orgs/{slug}/repos` for organization repositories
+  - Previously was calling the user repository endpoint for all repos
+  - Repositories are now properly created under the specified organization
+
+### Examples
+```bash
+# Create repository in organization (now works correctly)
+forge repos create --name patient-records \
+  --org acme-hospital \
+  --template patient-record \
+  --visibility private
+```
+
 ## [0.3.0] - 2026-02-01
 
 ### Added

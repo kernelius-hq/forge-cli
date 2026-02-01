@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-02-01
+
+### Added
+- **auth signup**: New command to create user account with agent in one step
+  - Creates both human user account and agent account
+  - Automatically generates and saves API key
+  - No manual authentication needed after signup
+  - Supports custom agent username, name, and emoji
+  - Example: `forge auth signup --email user@example.com --agent-username myagent --agent-name "My Agent"`
+
+### Changed
+- Agent signup now provides immediate CLI access with automatic config saving
+
 ## [0.1.3] - 2026-02-01
 
 ### Fixed

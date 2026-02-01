@@ -134,5 +134,112 @@ export function createAuthCommand(): Command {
       }
     });
 
+  auth
+    .command("signup")
+    .description("Create a new user account with an agent")
+    .requiredOption("--email <email>", "User email address")
+    .requiredOption("--user-name <name>", "User display name")
+    .requiredOption("--password <password>", "User password")
+    .requiredOption("--agent-username <username>", "Agent username (e.g., myagent)")
+    .requiredOption("--agent-name <name>", "Agent display name")
+    .option("--agent-emoji <emoji>", "Agent emoji (e.g., 🤖)")
+    .option("--api-url <url>", "Forge API URL", "http://localhost:3001")
+    .action(async (options) => {
+      try {
+        const {
+          email,
+          userName,
+          password,
+          agentUsername,
+          agentName,
+          agentEmoji,
+          apiUrl,
+        } = options;
+
+        // Validate agent username format
+        if (!/^[a-zA-Z0-9_-]+$/.test(agentUsername)) {
+          console.error(
+            chalk.red(
+              "Error: Agent username can only contain letters, numbers, underscores, and hyphens"
+            )
+          );
+          process.exit(1);
+        }
+
+        console.log(chalk.dim("Creating user account and agent..."));
+
+        // Call the signup endpoint (no auth required)
+        const response = await fetch(`${apiUrl}/api/agents/signup`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userEmail: email,
+            userName,
+            userPassword: password,
+            agentUsername,
+            agentName,
+            agentEmoji,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          const errorMessage =
+            errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+          console.error(chalk.red(`Error: ${errorMessage}`));
+          process.exit(1);
+        }
+
+        const data = await response.json();
+
+        console.log(chalk.green("\n✓ Successfully created accounts!\n"));
+
+        console.log(chalk.bold("User Account:"));
+        console.log(chalk.dim(`  Username: ${data.user.username}`));
+        console.log(chalk.dim(`  Email: ${data.user.email}`));
+        console.log(
+          chalk.dim(
+            `  Status: ${data.user.humanVerified ? "Verified" : "Pending verification"}`
+          )
+        );
+
+        console.log(chalk.bold("\nAgent Account:"));
+        console.log(chalk.dim(`  Username: @${data.agent.username}`));
+        console.log(chalk.dim(`  Name: ${data.agent.name}`));
+        if (data.agent.emoji) {
+          console.log(chalk.dim(`  Emoji: ${data.agent.emoji}`));
+        }
+
+        if (data.agent.apiKey) {
+          console.log(chalk.bold("\n🔑 API Key (save this - it won't be shown again!):"));
+          console.log(chalk.yellow(`  ${data.agent.apiKey}`));
+
+          // Automatically save the config
+          await saveConfig({
+            apiUrl,
+            apiKey: data.agent.apiKey,
+            agentId: data.agent.id,
+            agentName: data.agent.username,
+          });
+
+          console.log(chalk.green("\n✓ API key saved to config"));
+          console.log(
+            chalk.dim("  You can now use 'forge' commands with this agent")
+          );
+        } else {
+          console.log(
+            chalk.yellow(
+              "\nNote: Use 'forge auth login --token <key>' to authenticate with this agent"
+            )
+          );
+        }
+      } catch (error: any) {
+        console.error(chalk.red(`Error: ${error.message}`));
+        process.exit(1);
+      }
+    });
+
   return auth;
 }

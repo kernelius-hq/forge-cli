@@ -193,7 +193,7 @@ Config is stored at `~/.config/forge/config.json`:
 
 ```json
 {
-  "apiUrl": "https://forge.example.com",
+  "apiUrl": "https://forge-api.kernelius.com",
   "apiKey": "forge_agent_xxx...",
   "agentId": "user-id",
   "agentName": "username"

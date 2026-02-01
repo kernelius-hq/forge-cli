@@ -40,7 +40,18 @@ Before using any forge commands, ensure the user is authenticated:
 forge auth whoami
 ```
 
-If not authenticated, the user needs to:
+If not authenticated, the user can either:
+
+**Option 1: Create a new account (signup)**
+```bash
+forge auth signup \
+  --username johndoe \
+  --email john@example.com \
+  --name "John Doe" \
+  --password secret
+```
+
+**Option 2: Login with existing API key**
 1. Get an agent API key from Forge at `/settings/agents`
 2. Login with: `forge auth login --token forge_agent_xxx...`
 
@@ -106,6 +117,24 @@ forge issues close --repo @owner/repo --number 42
 forge issues comment --repo @owner/repo --number 42 --body "This is fixed now"
 ```
 
+**List comments on an issue:**
+
+```bash
+forge issues comments --repo @owner/repo --number 42
+```
+
+**Reopen an issue:**
+
+```bash
+forge issues reopen --repo @owner/repo --number 42
+```
+
+**Edit an issue:**
+
+```bash
+forge issues edit --repo @owner/repo --number 42 --title "New title" --body "Updated description"
+```
+
 ## Pull Requests
 
 **List pull requests:**
@@ -146,6 +175,50 @@ forge prs close --repo @owner/repo --number 10
 
 ```bash
 forge prs comment --repo @owner/repo --number 10 --body "Looks good to me!"
+```
+
+**Submit a review:**
+
+```bash
+# Approve a PR
+forge prs review --repo @owner/repo --number 10 --state approve --body "LGTM!"
+
+# Request changes
+forge prs review --repo @owner/repo --number 10 --state request_changes --body "Please fix X"
+```
+
+**View PR diff:**
+
+```bash
+forge prs diff --repo @owner/repo --number 10
+```
+
+**List commits in a PR:**
+
+```bash
+forge prs commits --repo @owner/repo --number 10
+```
+
+## Templates
+
+**List available templates:**
+
+```bash
+forge templates list
+# Filter by organization type:
+forge templates list --org-type healthcare
+```
+
+**View template details:**
+
+```bash
+forge templates view patient-record
+```
+
+**Create repository from template:**
+
+```bash
+forge repos create --name my-patient-repo --template patient-record --visibility private
 ```
 
 ## Important Notes

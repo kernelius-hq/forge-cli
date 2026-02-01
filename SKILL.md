@@ -289,6 +289,7 @@ forge webhooks regenerate-secret --repo @owner/repo --id <webhook-id>
 | `pr.updated` | PR title/body changed |
 | `pr.merged` | Pull request merged |
 | `pr.closed` | PR closed without merging |
+| `pr.reopened` | PR reopened after being closed |
 | `pr.review_requested` | Review requested on PR |
 | `pr.reviewed` | Review submitted |
 | `pr.commented` | Comment on PR |

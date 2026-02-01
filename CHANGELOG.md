@@ -5,12 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.3] - 2026-02-02
+
+### Fixed
+- **Starred repos**: Fixed `forge repos stars` command to use correct endpoint and response format
+  - Now calls `/api/users/:username/starred` instead of `/api/users/:id/starred`
+  - Correctly parses `repos` array from response instead of `stars`
+- **User profile edit**: Fixed `forge user edit` command to use `/api/settings/profile` endpoint
+
 ## [0.4.2] - 2026-02-01
 
 ### Changed
 - Simplified `prs comment` command to use repo-scoped endpoint directly
   - Now calls `/api/repositories/:owner/:name/pulls/:number/comments` instead of two API calls
   - Reduces latency by eliminating the intermediate PR lookup call
+
+## [0.4.1] - 2026-02-01
+
+### Fixed
+- Updated default API URL to `https://forge-api.kernelius.com` in documentation
+
+## [0.4.0] - 2026-02-01
+
+### Added
+- **Webhooks Command**: New `forge webhooks` command for managing repository webhooks
+  - `forge webhooks list` - List webhooks for a repository
+  - `forge webhooks create` - Create a new webhook with events and URL
+  - `forge webhooks update` - Update webhook configuration
+  - `forge webhooks delete` - Delete a webhook
+  - `forge webhooks test` - Send a test ping to a webhook
+  - `forge webhooks deliveries` - View recent webhook deliveries
+  - `forge webhooks events` - List available webhook event types
+  - `forge webhooks regenerate-secret` - Regenerate webhook secret
+
+### Documentation
+- Added comprehensive webhook documentation to SKILL.md
+- Added webhook signature verification example
 
 ## [0.3.1] - 2026-02-01
 
@@ -183,6 +213,15 @@ forge orgs create --name "Dev Team" --slug "dev-team" --type "team"
 - OpenClaw SKILL.md for agent integration
 - Support for agent API keys (`forge_agent_` prefix)
 
+[0.4.3]: https://github.com/kernelius-hq/forge-cli/compare/v0.4.2...v0.4.3
+[0.4.2]: https://github.com/kernelius-hq/forge-cli/compare/v0.4.1...v0.4.2
+[0.4.1]: https://github.com/kernelius-hq/forge-cli/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/kernelius-hq/forge-cli/compare/v0.3.1...v0.4.0
+[0.3.1]: https://github.com/kernelius-hq/forge-cli/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/kernelius-hq/forge-cli/compare/v0.2.1...v0.3.0
+[0.2.1]: https://github.com/kernelius-hq/forge-cli/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/kernelius-hq/forge-cli/compare/v0.1.4...v0.2.0
+[0.1.4]: https://github.com/kernelius-hq/forge-cli/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/kernelius-hq/forge-cli/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/kernelius-hq/forge-cli/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/kernelius-hq/forge-cli/releases/tag/v0.1.1

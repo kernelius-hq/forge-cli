@@ -16,7 +16,7 @@ const CONFIG_PATH = join(CONFIG_DIR, "config.json");
 export async function getConfig(): Promise<ForgeConfig> {
   if (!existsSync(CONFIG_PATH)) {
     return {
-      apiUrl: "http://localhost:3001",
+      apiUrl: "https://forge-api.kernelius.com",
     };
   }
 
@@ -39,7 +39,7 @@ export async function saveConfig(config: ForgeConfig): Promise<void> {
 
 export async function clearConfig(): Promise<void> {
   const config: ForgeConfig = {
-    apiUrl: "http://localhost:3001",
+    apiUrl: "https://forge-api.kernelius.com",
   };
   await saveConfig(config);
 }

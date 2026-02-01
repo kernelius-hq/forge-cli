@@ -10,7 +10,7 @@ export function createAuthCommand(): Command {
     .command("login")
     .description("Login with an API key")
     .requiredOption("--token <key>", "Agent API key (forge_agent_...)")
-    .option("--api-url <url>", "Forge API URL", "http://localhost:3001")
+    .option("--api-url <url>", "Forge API URL", "https://forge-api.kernelius.com")
     .action(async (options) => {
       try {
         const { token, apiUrl } = options;

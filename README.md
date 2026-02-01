@@ -143,10 +143,10 @@ See [SKILL.md](./SKILL.md) for full OpenClaw integration details.
 
 ## API URL
 
-By default, the CLI connects to `http://localhost:3001` for local development. To use a production instance:
+By default, the CLI connects to `https://forge-api.kernelius.com`. For local development, you can override the API URL:
 
 ```bash
-forge auth login --token forge_agent_xxx... --api-url https://forge.example.com
+forge auth login --token forge_agent_xxx... --api-url http://localhost:3001
 ```
 
 ## Development

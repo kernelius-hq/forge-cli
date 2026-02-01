@@ -114,7 +114,8 @@ export function createOrgsCommand(): Command {
     .argument("<slug>", "Organization slug")
     .action(async (slug: string) => {
       try {
-        const members = await apiGet<any[]>(`/api/organizations/${slug}/members`);
+        const result = await apiGet<{ members: any[] }>(`/api/orgs/${slug}/members`);
+        const members = result.members || [];
 
         if (members.length === 0) {
           console.log(chalk.yellow("No members found"));
@@ -142,7 +143,7 @@ export function createOrgsCommand(): Command {
     .option("--role <role>", "Member role (owner/admin/member)", "member")
     .action(async (slug: string, username: string, options) => {
       try {
-        await apiPost<any>(`/api/organizations/${slug}/members`, {
+        await apiPost<any>(`/api/orgs/${slug}/members`, {
           username,
           role: options.role,
         });
@@ -161,7 +162,7 @@ export function createOrgsCommand(): Command {
     .argument("<username>", "Username to remove")
     .action(async (slug: string, username: string) => {
       try {
-        await apiDelete<any>(`/api/organizations/${slug}/members/${username}`);
+        await apiDelete<any>(`/api/orgs/${slug}/members/${username}`);
 
         console.log(chalk.green(`✓ Removed @${username} from @${slug}`));
       } catch (error: any) {
@@ -176,7 +177,8 @@ export function createOrgsCommand(): Command {
     .argument("<slug>", "Organization slug")
     .action(async (slug: string) => {
       try {
-        const teams = await apiGet<any[]>(`/api/organizations/${slug}/teams`);
+        const result = await apiGet<{ teams: any[] }>(`/api/orgs/${slug}/teams`);
+        const teams = result.teams || [];
 
         if (teams.length === 0) {
           console.log(chalk.yellow("No teams found"));
@@ -206,7 +208,7 @@ export function createOrgsCommand(): Command {
     .option("--description <desc>", "Team description")
     .action(async (slug: string, options) => {
       try {
-        const team = await apiPost<any>(`/api/organizations/${slug}/teams`, {
+        const team = await apiPost<any>(`/api/orgs/${slug}/teams`, {
           name: options.name,
           description: options.description,
         });
@@ -225,9 +227,10 @@ export function createOrgsCommand(): Command {
     .argument("<team>", "Team name")
     .action(async (slug: string, team: string) => {
       try {
-        const members = await apiGet<any[]>(
-          `/api/organizations/${slug}/teams/${team}/members`
+        const result = await apiGet<{ members: any[] }>(
+          `/api/orgs/${slug}/teams/${team}/members`
         );
+        const members = result.members || [];
 
         if (members.length === 0) {
           console.log(chalk.yellow("No team members found"));
@@ -255,7 +258,7 @@ export function createOrgsCommand(): Command {
     .action(async (slug: string, team: string, username: string) => {
       try {
         await apiPost<any>(
-          `/api/organizations/${slug}/teams/${team}/members`,
+          `/api/orgs/${slug}/teams/${team}/members`,
           {
             username,
           }
@@ -277,7 +280,7 @@ export function createOrgsCommand(): Command {
     .action(async (slug: string, team: string, username: string) => {
       try {
         await apiDelete<any>(
-          `/api/organizations/${slug}/teams/${team}/members/${username}`
+          `/api/orgs/${slug}/teams/${team}/members/${username}`
         );
 
         console.log(chalk.green(`✓ Removed @${username} from team ${team}`));

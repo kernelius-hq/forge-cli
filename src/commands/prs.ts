@@ -360,7 +360,8 @@ export function createPrsCommand(): Command {
           `/api/repositories/${ownerIdentifier}/${name}/pulls/${options.number}`
         );
 
-        const reviews = await apiGet<any[]>(`/api/pulls/${pr.id}/reviews`);
+        const result = await apiGet<{ reviews: any[] }>(`/api/pulls/${pr.id}/reviews`);
+        const reviews = result.reviews || [];
 
         if (reviews.length === 0) {
           console.log(chalk.yellow("No reviews found"));
@@ -406,7 +407,8 @@ export function createPrsCommand(): Command {
           `/api/repositories/${ownerIdentifier}/${name}/pulls/${options.number}`
         );
 
-        const commits = await apiGet<any[]>(`/api/pulls/${pr.id}/commits`);
+        const result = await apiGet<{ commits: any[] }>(`/api/pulls/${pr.id}/commits`);
+        const commits = result.commits || [];
 
         if (commits.length === 0) {
           console.log(chalk.yellow("No commits found"));

@@ -260,9 +260,11 @@ export function createIssuesCommand(): Command {
       try {
         const [ownerIdentifier, name] = parseRepoArg(options.repo);
 
-        const labels = await apiGet<any[]>(
+        const result = await apiGet<{ labels: any[] }>(
           `/api/repositories/${ownerIdentifier}/${name}/labels`
         );
+
+        const labels = result.labels || [];
 
         if (labels.length === 0) {
           console.log(chalk.yellow("No labels found"));

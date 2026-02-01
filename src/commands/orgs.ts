@@ -16,13 +16,11 @@ export function createOrgsCommand(): Command {
         let organizations: any[];
 
         if (options.member) {
-          const user = await apiGet<any>("/api/users/me");
-          const result = await apiGet<{ organizations: any[] }>(
-            `/api/users/${user.id}/organizations`
-          );
+          const result = await apiGet<any>("/api/user/orgs");
           organizations = result.organizations || [];
         } else {
-          organizations = await apiGet<any[]>("/api/organizations");
+          const result = await apiGet<any>("/api/orgs/public");
+          organizations = result.organizations || [];
         }
 
         if (organizations.length === 0) {
@@ -36,6 +34,9 @@ export function createOrgsCommand(): Command {
         for (const org of organizations) {
           console.log(chalk.cyan(`@${org.slug}`));
           console.log(chalk.dim(`  ${org.name}`));
+          if (org.metadata?.type) {
+            console.log(chalk.dim(`  Type: ${org.metadata.type}`));
+          }
           if (org.metadata?.description) {
             console.log(chalk.dim(`  ${org.metadata.description}`));
           }
@@ -52,10 +53,13 @@ export function createOrgsCommand(): Command {
     .argument("<slug>", "Organization slug")
     .action(async (slug: string) => {
       try {
-        const org = await apiGet<any>(`/api/organizations/${slug}`);
+        const org = await apiGet<any>(`/api/orgs/${slug}`);
 
         console.log(chalk.bold(`@${org.slug}`));
         console.log(chalk.dim(org.name));
+        if (org.metadata?.type) {
+          console.log(chalk.dim(`Type: ${org.metadata.type}`));
+        }
         console.log();
 
         if (org.metadata?.description) {
@@ -76,18 +80,28 @@ export function createOrgsCommand(): Command {
     .requiredOption("--name <name>", "Organization name")
     .requiredOption("--slug <slug>", "Organization slug (URL identifier)")
     .option("--description <desc>", "Organization description")
+    .option("--type <type>", "Organization type (e.g., personal, team, company, open-source)")
     .action(async (options) => {
       try {
-        const org = await apiPost<any>("/api/organizations", {
+        const metadata: any = {};
+        if (options.description) {
+          metadata.description = options.description;
+        }
+        if (options.type) {
+          metadata.type = options.type;
+        }
+
+        const org = await apiPost<any>("/api/orgs", {
           name: options.name,
           slug: options.slug,
-          metadata: options.description
-            ? { description: options.description }
-            : undefined,
+          metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
         });
 
         console.log(chalk.green("✓ Organization created successfully"));
         console.log(chalk.dim(`  @${org.slug}`));
+        if (options.type) {
+          console.log(chalk.dim(`  Type: ${options.type}`));
+        }
       } catch (error: any) {
         console.error(chalk.red(`Error: ${error.message}`));
         process.exit(1);

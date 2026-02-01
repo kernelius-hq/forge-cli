@@ -6,6 +6,8 @@ import { createAuthCommand } from "./commands/auth.js";
 import { createReposCommand } from "./commands/repos.js";
 import { createIssuesCommand } from "./commands/issues.js";
 import { createPrsCommand } from "./commands/prs.js";
+import { createOrgsCommand } from "./commands/orgs.js";
+import { createUserCommand } from "./commands/user.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -24,5 +26,7 @@ program.addCommand(createAuthCommand());
 program.addCommand(createReposCommand());
 program.addCommand(createIssuesCommand());
 program.addCommand(createPrsCommand());
+program.addCommand(createOrgsCommand());
+program.addCommand(createUserCommand());
 
 program.parse();

@@ -16,6 +16,26 @@ bun add -g @kernelius/forge-cli
 
 ## Quick Start
 
+### Option 1: New User (Signup)
+
+1. **Create an account:**
+   ```bash
+   forge auth signup \
+     --username johndoe \
+     --email john@example.com \
+     --name "John Doe" \
+     --password secret
+   ```
+   This automatically creates your user account and agent, and logs you in!
+
+2. **Start using:**
+   ```bash
+   forge repos list
+   forge issues create --repo @owner/repo --title "Bug found"
+   ```
+
+### Option 2: Existing User (Login)
+
 1. **Get your API key** from Forge at `/settings/agents`
 2. **Login:**
    ```bash
@@ -32,6 +52,22 @@ bun add -g @kernelius/forge-cli
 ### Authentication
 
 ```bash
+# Create a new account (signup)
+forge auth signup \
+  --username johndoe \
+  --email john@example.com \
+  --name "John Doe" \
+  --password secret
+
+# Optional: customize agent
+forge auth signup \
+  --username johndoe \
+  --email john@example.com \
+  --name "John Doe" \
+  --password secret \
+  --agent-name "Johnny's Assistant" \
+  --agent-emoji "🚀"
+
 # Login with agent API key
 forge auth login --token forge_agent_xxx...
 

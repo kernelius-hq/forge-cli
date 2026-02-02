@@ -171,7 +171,8 @@ export function createReposCommand(): Command {
         }
 
         console.log(chalk.green("✓ Repository created successfully"));
-        console.log(chalk.dim(`  @${repo.ownerIdentifier}/${repo.name}`));
+        const repoOwner = repo.owner?.identifier || repo.ownerIdentifier || "unknown";
+        console.log(chalk.dim(`  @${repoOwner}/${repo.name}`));
         if (template) {
           const templateObj = getTemplateById(template);
           console.log(chalk.dim(`  Template: ${templateObj?.name || template}`));
@@ -196,7 +197,7 @@ export function createReposCommand(): Command {
         const user = await apiGet<any>("/api/users/me");
         const targetOrgIdentifier = options.org || user.username;
 
-        const fork = await apiPost<any>(
+        const result = await apiPost<any>(
           `/api/repositories/${ownerIdentifier}/${name}/fork`,
           {
             name: options.name || name,
@@ -204,8 +205,12 @@ export function createReposCommand(): Command {
           }
         );
 
+        // Handle both { repo: {...} } and flat response formats
+        const fork = result.repo || result;
+        const forkOwner = fork.owner?.identifier || fork.ownerIdentifier || "unknown";
+
         console.log(chalk.green("✓ Repository forked successfully"));
-        console.log(chalk.dim(`  @${fork.ownerIdentifier}/${fork.name}`));
+        console.log(chalk.dim(`  @${forkOwner}/${fork.name}`));
         console.log(chalk.dim(`  Forked from @${ownerIdentifier}/${name}`));
       } catch (error: any) {
         console.error(chalk.red(`Error: ${error.message}`));
